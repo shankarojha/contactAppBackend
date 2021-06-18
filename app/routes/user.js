@@ -24,4 +24,6 @@ module.exports.setRouter = (app) => {
   app.get(`/getContacts`,contactController.getAllContacts)
 
   app.get(`/searchContact/:text/search`, contactController.searchContact)
+
+  app.get('/getSingleContact/:userId', contactController.getSingleContact)
 };

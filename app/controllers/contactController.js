@@ -440,8 +440,7 @@ let getAllContacts = (req, res) => {
 }; // end getAllContacts
 
 let searchContact = (req, res) => {
-
-  let regex =  {$regex: req.params.text, $options: "i"}
+  let regex = { $regex: req.params.text, $options: "i" };
   ContactModel.find({ contactName: regex })
     .select("-__v -_id")
     .sort({ contactName: 1 })
@@ -457,7 +456,6 @@ let searchContact = (req, res) => {
         );
         res.status(500).send(apiResponse);
       } else if (check.isEmpty(result)) {
-        console.log(err);
         logger.info("no contact found", "contactController: searchContact");
         let apiResponse = response.generate(
           true,
@@ -479,10 +477,47 @@ let searchContact = (req, res) => {
     });
 };
 
+let getSingleContact = (req, res) => {
+  ContactModel.findOne({ userId: req.params.userId })
+    .select("-__v -_id")
+    .exec((err, result) => {
+      if (err) {
+        console.log(err);
+        logger.error(err.message, "contactController: getSingleContact", 10);
+        let apiResponse = response.generate(
+          true,
+          "Failed To find text",
+          500,
+          null
+        );
+        res.send(apiResponse)
+      }else if(check.isEmpty(result)){
+        logger.info("no contact found", "contactController: getSingleContact");
+        let apiResponse = response.generate(
+          true,
+          "Failed To find contact",
+          404,
+          null
+        );
+        res.send(apiResponse)
+      }else{
+        logger.info("contact found", "contactController: getSingleContact");
+        let apiResponse = response.generate(
+          false,
+          "Contact found",
+          200,
+          result
+        );
+        res.send(apiResponse);
+      }
+    });
+};
+
 module.exports = {
   signup: signup,
   login: login,
   editContact: editContact,
   getAllContacts: getAllContacts,
-  searchContact: searchContact
+  searchContact: searchContact,
+  getSingleContact:getSingleContact
 };
