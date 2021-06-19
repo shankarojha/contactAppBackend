@@ -259,7 +259,7 @@ let login = (req, res) => {
             } else {
               let apiResponse = {
                 authToken: result.authToken,
-                userDetails: result.userDetails,
+                userDetails: tokenDetails.userDetails,
               };
               console.log("apiResponse:" + apiResponse);
               resolve(apiResponse);
@@ -267,7 +267,7 @@ let login = (req, res) => {
           });
           /* if user's AuthModel is already present */
         } else {
-          result.authToken = tokenDetails.authToken;
+          result.authToken = tokenDetails.token;
           result.tokenSecret = tokenDetails.tokenSecret;
           result.tokenGenerationTime = time.now();
           result.save((err, newAuthToken) => {
@@ -283,7 +283,7 @@ let login = (req, res) => {
             } else {
               let apiResponse = {
                 authToken: newAuthToken.authToken,
-                userDetails: newAuthToken.userDetails,
+                userDetails: tokenDetails.userDetails
               };
               console.log("apiResponse:" + apiResponse);
               resolve(apiResponse);
