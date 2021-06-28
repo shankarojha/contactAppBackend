@@ -401,6 +401,50 @@ let editContact = (req, res) => {
 
 /* Get all contacts */
 
+let getPaginatedContacts = (req, res) => {
+  
+  const skip = parseInt(req.query.skip)
+  const limit = parseInt(req.query.limit)
+  
+  ContactModel.find()
+    .select("-__v -_id")
+    .sort({ contactName: 1 })
+    .skip(skip)
+    .limit(limit)
+    .exec((err, result) => {
+      if (err) {
+        console.log(err);
+        logger.error(err.message, "contactController: getAllContacts", 10);
+        let apiResponse = response.generate(
+          true,
+          "Failed To find text",
+          500,
+          null
+        );
+        res.send(apiResponse);
+      } else if (check.isEmpty(result)) {
+        console.log(err);
+        logger.info("no contact found", "contactController: getAllContacts");
+        let apiResponse = response.generate(
+          true,
+          "Failed To find contact",
+          404,
+          null
+        );
+        res.send(apiResponse);
+      } else {
+        logger.info("contact found", "contactController: getAllContacts");
+        let apiResponse = response.generate(
+          false,
+          "Contact found",
+          200,
+          result
+        );
+        res.send(apiResponse);
+      }
+    });
+}; // end getAllContacts
+
 let getAllContacts = (req, res) => {
   ContactModel.find()
     .select("-__v -_id")
@@ -519,5 +563,6 @@ module.exports = {
   editContact: editContact,
   getAllContacts: getAllContacts,
   searchContact: searchContact,
-  getSingleContact:getSingleContact
+  getSingleContact:getSingleContact,
+  getPaginatedContacts:getPaginatedContacts
 };
