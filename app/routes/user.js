@@ -28,4 +28,6 @@ module.exports.setRouter = (app) => {
   app.get('/getSingleContact/:userId', contactController.getSingleContact)
 
   app.get('/getContactsPagination' , contactController.getPaginatedContacts)
+
+  app.get('/getTotalNumberOfContacts' , contactController.getTotalNumberOfContacts)
 };

@@ -283,7 +283,7 @@ let login = (req, res) => {
             } else {
               let apiResponse = {
                 authToken: newAuthToken.authToken,
-                userDetails: tokenDetails.userDetails
+                userDetails: tokenDetails.userDetails,
               };
               console.log("apiResponse:" + apiResponse);
               resolve(apiResponse);
@@ -402,10 +402,9 @@ let editContact = (req, res) => {
 /* Get all contacts */
 
 let getPaginatedContacts = (req, res) => {
-  
-  const skip = parseInt(req.query.skip)
-  const limit = parseInt(req.query.limit)
-  
+  const skip = parseInt(req.query.skip);
+  const limit = parseInt(req.query.limit);
+
   ContactModel.find()
     .select("-__v -_id")
     .sort({ contactName: 1 })
@@ -534,8 +533,8 @@ let getSingleContact = (req, res) => {
           500,
           null
         );
-        res.send(apiResponse)
-      }else if(check.isEmpty(result)){
+        res.send(apiResponse);
+      } else if (check.isEmpty(result)) {
         logger.info("no contact found", "contactController: getSingleContact");
         let apiResponse = response.generate(
           true,
@@ -543,8 +542,8 @@ let getSingleContact = (req, res) => {
           404,
           null
         );
-        res.send(apiResponse)
-      }else{
+        res.send(apiResponse);
+      } else {
         logger.info("contact found", "contactController: getSingleContact");
         let apiResponse = response.generate(
           false,
@@ -557,12 +556,62 @@ let getSingleContact = (req, res) => {
     });
 };
 
+let getTotalNumberOfContacts = async (req, res) => {
+  try {
+    return (total = await ContactModel.count((err, result) => {
+      if (err) {
+        console.log(err);
+        logger.error(
+          err.message,
+          "contactController: getTotalNumberOfContacts",
+          10
+        );
+        let apiResponse = response.generate(
+          true,
+          "Failed To find text",
+          500,
+          null
+        );
+        res.send(apiResponse);
+      } else if (check.isEmpty(result)) {
+        console.log(err);
+        logger.info(
+          "no contact found",
+          "contactController: getTotalNumberOfContacts"
+        );
+        let apiResponse = response.generate(
+          true,
+          "Failed To find contact",
+          404,
+          null
+        );
+        res.send(apiResponse);
+      } else {
+        logger.info(
+          "contact found",
+          "contactController: getTotalNumberOfContacts"
+        );
+        let apiResponse = response.generate(
+          false,
+          "Contact found",
+          200,
+          result
+        );
+        res.send(apiResponse);
+      }
+    }));
+  } catch (error) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   signup: signup,
   login: login,
   editContact: editContact,
   getAllContacts: getAllContacts,
   searchContact: searchContact,
-  getSingleContact:getSingleContact,
-  getPaginatedContacts:getPaginatedContacts
+  getSingleContact: getSingleContact,
+  getPaginatedContacts: getPaginatedContacts,
+  getTotalNumberOfContacts: getTotalNumberOfContacts
 };
